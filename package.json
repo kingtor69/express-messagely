@@ -1,10 +1,11 @@
 {
   "name": "messagely",
   "version": "1.0.0",
-  "description": "",
+  "description": "## Tor Kingdon",
   "main": "index.js",
   "scripts": {
-    "test": "jest -i"
+    "test": "jest -i",
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,5 +19,14 @@
     "jsonwebtoken": "^8.3.0",
     "pg": "^8.3.3",
     "supertest": "^4.0.2"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kingtor69/express-messagely.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kingtor69/express-messagely/issues"
+  },
+  "homepage": "https://github.com/kingtor69/express-messagely#readme"
 }

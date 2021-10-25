@@ -32,3 +32,5 @@
  *                 to_user: {username, first_name, last_name, phone}}, ...]}
  *
  **/
+
+module.exports = ('users');
