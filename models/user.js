@@ -109,7 +109,29 @@ class User {
    *   {username, first_name, last_name, phone}
    */
 
-  static async messagesFrom(username) { }
+  static async messagesFrom(username) { 
+    const results = await db.query(
+      `SELECT m.id, u.username, u.first_name, u.last_name, u.phone, m.body, m.sent_at, m.read_at
+      FROM messages AS m
+      JOIN users AS u
+      ON u.username = m.from_username
+      WHERE u.username = $1`,
+      [ username ]
+    );
+    const resultsArray = [];
+    for (let i=0; i<results.rows.length; i++) {
+      const resultObj = {};
+      const { username, first_name, last_name, phone } = results.rows[i];
+      const fromUser = { username, first_name, last_name, phone };
+      resultObj.id = results.rows[i].id;
+      resultObj.body = results.rows[i].body;
+      resultObj.sent_at = results.rows[i].sent_at;
+      resultObj.read_at = results.rows[i].read_at;
+      resultObj.from_user = fromUser;      
+      resultsArray.push(resultObj);
+    };
+    return resultsArray;
+  };
 
   /** Return messages to this user.
    *
@@ -119,8 +141,40 @@ class User {
    *   {username, first_name, last_name, phone}
    */
 
-  static async messagesTo(username) { }
-}
+  static async messagesTo(username) { 
+    const resultsMessages = await db.query(
+      `SELECT m.id, m.from_username, m.body, m.sent_at, m.read_at
+      FROM messages AS m
+      JOIN users AS u
+      ON u.username = m.to_username
+      WHERE u.username = $1
+      ORDER BY m.to_username`,
+      [ username ]
+    );
+    const resultsArray = [];
+    const fromUsers = {};
+    for (let i=0; i<resultsMessages.rows.length; i++) {
+      const resultObj = {};
+      const fromUser = resultsMessages.rows[i].from_username;
+      if (!(fromUser in Object.keys(fromUsers))) {
+        const resultsFromUser = await db.query(
+          `SELECT username, first_name, last_name, phone
+          FROM users
+          WHERE username = $1`,
+          [ fromUser ]
+        );
+        fromUsers[fromUser] = resultsFromUser.rows[0];
+      };
+      resultObj.id = resultsMessages.rows[i].id;
+      resultObj.body = resultsMessages.rows[i].body;
+      resultObj.sent_at = resultsMessages.rows[i].sent_at;
+      resultObj.read_at = resultsMessages.rows[i].read_at;
+      resultObj.from_user = fromUsers[fromUser];
+      resultsArray.push(resultObj);
+    };
+    return resultsArray;
+  };
+};
 
 
 module.exports = User;
