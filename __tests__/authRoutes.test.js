@@ -1,11 +1,15 @@
-// const request = require("supertest");
-// const jwt = require("jsonwebtoken");
+const request = require("supertest");
+const jwt = require("jsonwebtoken");
 
-// const app = require("../app");
-// const db = require("../db");
-// const User = require("../models/user");
+const app = require("../app");
+const db = require("../db");
+const User = require("../models/user");
 
-
+describe("dummy test", () => {
+    test("true is true", () => {
+        expect(true).toBeTruthy();
+    })    
+})
 // describe("Auth Routes Test", function () {
 
 //   beforeEach(async function () {
@@ -74,6 +78,6 @@
 //   });
 // });
 
-// afterAll(async function () {
-//   await db.end();
-// });
+afterAll(async function () {
+  await db.end();
+});
