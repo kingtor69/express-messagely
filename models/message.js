@@ -75,7 +75,7 @@ class Message {
 
     if (!m) {
       throw new ExpressError(`No such message: ${id}`, 404);
-    }
+    };
 
     return {
       id: m.id,
