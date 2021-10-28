@@ -42,10 +42,12 @@ class User {
   static async authenticate(username, password) { 
     const result = await db.query(
       `SELECT username, password
-      FROM users`
+      FROM users
+      WHERE username = $1`,
+      [ username ]
     );
     const user = result.rows[0];
-    let isPasswordRight = await bcrypt.compare(password, user.password);
+    const isPasswordRight = user ? await bcrypt.compare(password, user.password) : false;
     
     return user && isPasswordRight;
   };
