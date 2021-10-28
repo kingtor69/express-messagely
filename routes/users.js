@@ -1,7 +1,7 @@
 /** requirements (in comments) from starter code by Colt Steele, Rithm School and/or Springboard */
 /** code by Tor Kingdon */
 const express = require("express");
-const { response, route } = require("../app");
+const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
 const User = require("../models/user");
 
 const router = new express.Router();
@@ -12,7 +12,7 @@ const router = new express.Router();
  *
  **/
 
-router.get("/", async (req, res, next) => {
+router.get("/", ensureLoggedIn, async (req, res, next) => {
     try {
         const users = await User.all();
         return res.json(users);
@@ -26,9 +26,9 @@ router.get("/", async (req, res, next) => {
  * => {user: {username, first_name, last_name, phone, join_at, last_login_at}}
  *
  **/
-router.get("/:username", async (req, res, next) => {
+router.get("/:username", ensureCorrectUser, async (req, res, next) => {
     try {
-        const user = await User.get(req.params/username);
+        const user = await User.get(req.params.username);
         return res.json(user);
     } catch (e) {
         return next(e);
@@ -44,7 +44,14 @@ router.get("/:username", async (req, res, next) => {
  *                 from_user: {username, first_name, last_name, phone}}, ...]}
  *
  **/
-
+router.get("/:username/to", ensureCorrectUser, async (req, res, next) => {
+    try {
+        const messages = await User.messagesTo(req.params.username);
+        return res.json(messages);
+    } catch(e) {
+        return next(e);
+    };
+});
 
 /** GET /:username/from - get messages from user
  *
@@ -55,3 +62,13 @@ router.get("/:username", async (req, res, next) => {
  *                 to_user: {username, first_name, last_name, phone}}, ...]}
  *
  **/
+router.get("/:username/from", ensureCorrectUser, async (req, res, next) => {
+    try {
+        const messages = await User.messagesFrom(req.params.username);
+        return res.json(messages);
+    } catch(e) {
+        return next(e);
+    };
+});
+
+module.exports = router;

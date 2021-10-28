@@ -10,7 +10,12 @@
  * Make sure that the currently-logged-in users is either the to or from user.
  *
  **/
+const express = require("express");
+const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
+const Message = require("../models/message");
 
+const router = new express.Router();
+ 
 
 /** POST / - post message.
  *
@@ -18,7 +23,7 @@
  *   {message: {id, from_username, to_username, body, sent_at}}
  *
  **/
-
+router.post('/', authenticateJWT, ensureLoggedIn, )
 
 /** POST/:id/read - mark message as read:
  *
@@ -28,4 +33,4 @@
  *
  **/
 
-module.exports = ('messages');
+// module.exports = router;

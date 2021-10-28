@@ -3,6 +3,9 @@
  * Make sure to update their last-login!
  *
  **/
+const express = require("express");
+
+const router = new express.Router();
 
 /** POST /register - register user: registers, logs in, and returns token.
  *
@@ -10,4 +13,5 @@
  *
  *  Make sure to update their last-login!
  */
-module.exports = ('auth');
+
+ module.exports = router;
