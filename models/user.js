@@ -110,24 +110,34 @@ class User {
    */
 
   static async messagesFrom(username) { 
-    const results = await db.query(
-      `SELECT m.id, u.username, u.first_name, u.last_name, u.phone, m.body, m.sent_at, m.read_at
+    const resultsMessages = await db.query(
+      `SELECT m.id, m.to_username, m.body, m.sent_at, m.read_at
       FROM messages AS m
       JOIN users AS u
       ON u.username = m.from_username
-      WHERE u.username = $1`,
+      WHERE u.username = $1
+      ORDER BY m.to_username`,
       [ username ]
     );
     const resultsArray = [];
-    for (let i=0; i<results.rows.length; i++) {
+    const toUsers = {};
+    for (let i=0; i<resultsMessages.rows.length; i++) {
       const resultObj = {};
-      const { username, first_name, last_name, phone } = results.rows[i];
-      const fromUser = { username, first_name, last_name, phone };
-      resultObj.id = results.rows[i].id;
-      resultObj.body = results.rows[i].body;
-      resultObj.sent_at = results.rows[i].sent_at;
-      resultObj.read_at = results.rows[i].read_at;
-      resultObj.from_user = fromUser;      
+      const toUser = resultsMessages.rows[i].to_username;
+      if (!(toUser in Object.keys(toUsers))) {
+        const resultsToUser = await db.query(
+          `SELECT username, first_name, last_name, phone
+          FROM users
+          WHERE username = $1`,
+          [ toUser ]
+        );
+        toUsers[toUser] = resultsToUser.rows[0];
+      };
+      resultObj.id = resultsMessages.rows[i].id;
+      resultObj.body = resultsMessages.rows[i].body;
+      resultObj.sent_at = resultsMessages.rows[i].sent_at;
+      resultObj.read_at = resultsMessages.rows[i].read_at;
+      resultObj.to_user = toUsers[toUser];
       resultsArray.push(resultObj);
     };
     return resultsArray;
@@ -148,7 +158,7 @@ class User {
       JOIN users AS u
       ON u.username = m.to_username
       WHERE u.username = $1
-      ORDER BY m.to_username`,
+      ORDER BY m.from_username`,
       [ username ]
     );
     const resultsArray = [];
